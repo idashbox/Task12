@@ -5,9 +5,13 @@ import Classes.InputArgs;
 import Classes.MainLogicTask;
 import Classes.Test;
 
+import java.awt.*;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -16,6 +20,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Array;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.Arrays;
@@ -31,47 +36,25 @@ public class FrameMain extends JFrame {
 
 
     private JPanel panelMain;
-    private JTextArea textArea1;
     private JTextField textField2;
     private JTable table2;
     private JTextField textField1;
 
 
     static InputArgs inputArgs = new InputArgs();
+    private static Color getColor(int n, int N) {
+        if (n == N) {
+            return Color.GREEN;
+        }
+            else{
+                return Color.WHITE;
+        }
 
-//    public static void runTest() throws IOException {
-//        Test test = new Test();
-//        //первый тест
-//        String[] pathsTest1 = {test.testPath1In, test.testPath1Out};
-//        runSolutionTest(pathsTest1, 1);
-//
-//        //второй тест
-//        String[] pathsTest2 = {test.testPath2In, test.testPath2Out};
-//        runSolutionTest(pathsTest2, 2);
-//
-//        //третий тест
-//        String[] pathsTest3 = {test.testPath3In, test.testPath3Out};
-//        runSolutionTest(pathsTest3, 3);
-//
-//        //четвёртый тест
-//        String[] pathsTest4 = {test.testPath4In, test.testPath4Out};
-//        runSolutionTest(pathsTest4, 4);
-//
-//        //пятый тест
-//        String[] pathsTest5 = {test.testPath5In, test.testPath5Out};
-//        runSolutionTest(pathsTest5, 5);
-//    }
-//
-//    public static void runSolutionTest(String[] pathArgs, int num) throws IOException {
-//        inputArgs.setInputFile(pathArgs[0]);
-//        inputArgs.setOutputFile(pathArgs[1]);
-//        readAndWriteMethod(inputArgs);
-//        printSuccessMessage(num);
-//    }
+    }
+
 
     public FrameMain() throws IOException {
 
-//        runTest();
 
         this.setTitle("Основная программа");
         this.setContentPane(panelMain);
@@ -121,10 +104,23 @@ public class FrameMain extends JFrame {
                         int[][] arr = JTableUtils.readIntMatrixFromJTable(table1);
                         int N = Integer.parseInt(textField2.getText());
                         int[][] result = MainLogicTask.getAnswer(arr, N);
+                        table2.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+                            @Override
+                            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                                final Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                                TableModel tableModel = table2.getModel();
+                                for (int r = 0; r < row; r++) {
+                                    for (int s = 0; s < column; s++) {
+                                        Object obj = tableModel.getValueAt(r, s);
+                                        if (Integer.parseInt(obj.toString()) == N) {
+                                            c.setBackground(getColor(Integer.parseInt(value.toString()), N));
+                                        }
+                                    }
+                                }
+                                return c;
+                            }
+                        });
                         JTableUtils.writeArrayToJTable(table2, result);
-//                        String answer = " ";
-//                        textField1.setText("Диагональные координаты верного прямоугольника:");
-//                        textField2.setText(answer);
                         String path = finalFileChooserSave.getSelectedFile().getPath();
                         File file = new File(path);
                         PrintWriter pw = new PrintWriter(file);
@@ -141,12 +137,6 @@ public class FrameMain extends JFrame {
             public void actionPerformed(ActionEvent e) {
             }
         });
-//        textArea1.addComponentListener(new ComponentAdapter() {
-//            @Override
-//            public void componentResized(ComponentEvent e) {
-//                super.componentResized(e);
-//            }
-//        });
         textField2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
